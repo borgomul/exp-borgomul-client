@@ -88,7 +88,7 @@ npm install
 npm run <SCRIPT>
 ```
 
-In this way you don't need to write your every query and mutation definition.
+In this way you don't need to write your every query and mutation definition as well as other typescript definition.
 
 <Details>
 <summary>Example</summary>
@@ -122,6 +122,57 @@ import {
 } from "../generated/graphql";
 
 const [signin, { loading }] = useSignInMutation();
+```
+
+## Perform Secure Queries to GraphQL Endpoints
+
+```js
+// codegen.yml
+schema:
+  - https://evolving-dory-55.hasura.app/v1/graphql:
+      headers:
+        "x-hasura-admin-secret": <SECRET>
+```
+
+OR
+
+```js
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+  GraphQLRequest,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { AuthProvider, ProtectedRoute } from "./components/auth/AuthContext";
+
+const httpLink = createHttpLink({
+  uri: "https://evolving-dory-55.hasura.app/v1/graphql",
+});
+
+const authLink = setContext(
+  ({ operationName }: GraphQLRequest, prevCtx: any) => {
+    const publicOperations = ["signin", "signup"];
+    if (
+      operationName &&
+      !publicOperations.includes(operationName.toLocaleLowerCase())
+    ) {
+      const token = localStorage.getItem("jwt");
+      return {
+        headers: {
+          ...prevCtx.headers,
+          Authorization: `Bearer ${token}`,
+        },
+      };
+    }
+  }
+);
+// for apollo client
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
+});
 ```
 
 </Details>

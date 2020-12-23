@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Formik, FormikValues, Form } from "formik";
 import * as Yup from "yup";
 import { Button, Typography, TextField } from "@material-ui/core";
-import { gql, MutationResult, useMutation } from "@apollo/client";
+import { MutationResult } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 import {
   SignInMutation,
   SignInMutationVariables,
   useSignInMutation,
 } from "../generated/graphql";
+import { authContext } from "./auth/AuthContext";
 
 interface Props {}
 
@@ -16,16 +17,6 @@ const initialValue = {
   username: "",
   password: "",
 };
-
-const SIGN_MUTATION = gql`
-  mutation SignIn($username: String!, $password: String!) {
-    login_user(credentials: { username: $username, password: $password }) {
-      auth
-      jwt
-      message
-    }
-  }
-`;
 
 const validationSchema = Yup.object().shape({
   username: Yup.string().required("This field is required"),
@@ -41,6 +32,8 @@ export interface SigninResponse {
 }
 function SignIn(props: Props) {
   const [signin, { loading }] = useSignInMutation();
+
+  const context = useContext(authContext);
   //useMutation(SIGN_MUTATION);
 
   const history = useHistory();
@@ -61,6 +54,7 @@ function SignIn(props: Props) {
     if (data?.login_user) {
       const { jwt } = data.login_user;
       localStorage.setItem("jwt", jwt);
+      context?.setIsUserSignedIn(true);
       history.push(`/profile`);
     }
   };

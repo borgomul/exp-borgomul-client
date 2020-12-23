@@ -1,5 +1,8 @@
 overwrite: true
-schema: "https://evolving-dory-55.hasura.app/v1/graphql"
+schema:
+  - https://evolving-dory-55.hasura.app/v1/graphql:
+      headers:
+        "x-hasura-admin-secret": "borgomul1234"
 documents: "src/**/*.graphql"
 generates:
   src/generated/graphql.tsx:
