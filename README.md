@@ -1,46 +1,127 @@
-# Getting Started with Create React App
+## Dependencies
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Install types for developement purpose:
 
-## Available Scripts
+```
+npm i @types/graphql -D
+```
 
-In the project directory, you can run:
+## Error
 
-### `yarn start`
+If you have any linting error with typescript:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```json
+// .vscode/settings.json
+{
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+If the above fix didn't work for you and get `Could not find a declaration file for module 'react/jsx-runtime'` error then just disable it site wide.
 
-### `yarn test`
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    ...
+    "noImplicitAny": false
+  },
+  "include": ["src"]
+}
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+If you have any issue with Import Cost Extension then use the following configuration:
 
-### `yarn build`
+```json
+{
+  // File extensions to be parsed by the Typescript parser
+  "importCost.typescriptExtensions": ["\\.tsx?$"],
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  // File extensions to be parsed by the Javascript parser
+  "importCost.javascriptExtensions": ["\\.jsx?$"],
+  // Which bundle size to display
+  "importCost.bundleSizeDecoration": "both",
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+  // Display the 'calculating' decoration
+  "importCost.showCalculatingDecoration": true,
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+  // Print debug messages in output channel
+  "importCost.debug": true,
+  "importCost.timeout": 432000
+}
+```
 
-### `yarn eject`
+## Hasura
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Hasura only require 2 things if you use JWT auth:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Properly configured HASURA_GRAPHQL_JWT_SECRET env variable (once you configure it - it doesn't matter if you use Google or email/password provider);
+2. [Firebase Auth REST API](https://firebase.google.com/docs/reference/rest/auth#section-sign-in-with-oauth-credential)
+3. Authentication header in request where its value has format:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+Bearer VALID_JWT_TOKEN
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## JS Things
 
-## Learn More
+- **`!!`:** It's used convert a "truethy" or "falsy" value to a real boolean
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## NextJS
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+process.browser is now deprecated and the recommended approach is
+
+```
+typeof window === "undefined"
+```
+
+## Typescript Things
+
+- `!`: There will be a scenario when TypeScript believes that certain property, variable will be `null` or `undefined`. But if you are sure that this variable cannot be `null`, then you can use this operator.
+
+## Codegen
+
+```
+npm install --save-dev @graphql-codegen/cli
+npx graphql-codegen init
+npm install
+npm run <SCRIPT>
+```
+
+In this way you don't need to write your every query and mutation definition.
+
+<Details>
+<summary>Example</summary>
+
+Instead of:
+
+```js
+import { gql, useMutation } from "@apollo/client";
+
+const SIGN_MUTATION = gql`
+  mutation SignIn($username: String!, $password: String!) {
+    login_user(credentials: { username: $username, password: $password }) {
+      auth
+      jwt
+      message
+    }
+  }
+`;
+
+const [signin, { loading }] = useMutation(SIGN_MUTATION);
+```
+
+Use this:
+
+```js
+import { MutationResult } from "@apollo/client";
+import {
+  SignInMutation,
+  SignInMutationVariables,
+  useSignInMutation,
+} from "../generated/graphql";
+
+const [signin, { loading }] = useSignInMutation();
+```
+
+</Details>

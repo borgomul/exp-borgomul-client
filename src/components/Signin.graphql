@@ -1,0 +1,7 @@
+mutation SignIn($username: String!, $password: String!) {
+  login_user(credentials: { username: $username, password: $password }) {
+    auth
+    jwt
+    message
+  }
+}
