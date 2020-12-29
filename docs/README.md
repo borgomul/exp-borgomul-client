@@ -82,6 +82,8 @@ import {
 const [signin, { loading }] = useSignInMutation(); // generated types
 ```
 
+</Details>
+
 ## Perform Secure Queries to GraphQL Endpoints
 
 ```js
@@ -97,6 +99,7 @@ Which is not good approach as it pretend to be admin.
 In order to use the Bearer token based authorization use the following instructions:
 
 <Details>
+
 <summary>Example</summary>
 
 ```js
