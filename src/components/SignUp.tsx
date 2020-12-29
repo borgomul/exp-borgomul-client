@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Typography, TextField } from "@material-ui/core";
 import { Formik, FormikValues, Form } from "formik";
 import * as Yup from "yup";
@@ -51,10 +51,6 @@ const validationSchema = Yup.object().shape({
 });
 
 function SignUp(props: Props) {
-  const [state, setState] = useState({
-    error: "",
-    success: "",
-  });
   // [function that trigger http req,{diff. state of mutation}]
   const [signup, { loading }] = useMutation(SIGNUP_MUTATION);
 
@@ -74,7 +70,6 @@ function SignUp(props: Props) {
   };
 
   const signupForm = () => {
-    const { error, success } = state;
     return (
       <>
         <Typography variant="h6">Sign Up</Typography>

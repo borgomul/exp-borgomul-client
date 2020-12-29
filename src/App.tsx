@@ -15,7 +15,7 @@ import { Route, Switch } from "react-router-dom";
 import SignUp from "./components/SignUp";
 import { Container } from "@material-ui/core";
 import SignIn from "./components/SignIn";
-
+import ResponsiveDrawer from "./components/header/Header";
 // secret routing
 import Secret from "./components/Secret";
 import { AuthProvider, ProtectedRoute } from "./components/auth/AuthContext";
@@ -54,6 +54,7 @@ function App() {
     <AuthProvider>
       <ApolloProvider client={client}>
         <Container>
+          <ResponsiveDrawer />
           <Switch>
             <Route path="/signup">
               <SignUp />
